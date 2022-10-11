@@ -14,7 +14,12 @@ const signinSchema = Joi.object({
   password: Joi.string().required(),
 });
 
+const urlSchema = Joi.object({
+  url: Joi.string().uri(),
+});
+
 const signupValidator = validator(signupSchema);
 const signinValidator = validator(signinSchema);
+const urlValidator = validator(urlSchema);
 
-export { signupValidator, signinValidator };
+export { signupValidator, signinValidator, urlValidator };

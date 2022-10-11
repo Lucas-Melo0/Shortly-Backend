@@ -24,7 +24,7 @@ const signinPost = async (req, res) => {
       'INSERT INTO sessions ("userId", token) VALUES ($1,$2);',
       [userId, token]
     );
-    return res.send(token).status(200);
+    return res.send({ token }).status(200);
   } catch (error) {
     console.log(error);
     return res.sendStatus(500);
