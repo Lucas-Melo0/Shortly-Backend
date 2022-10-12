@@ -31,4 +31,40 @@ const signinPost = async (req, res) => {
   }
 };
 
-export { signupPost, signinPost };
+const getUserData = async (req, res) => {
+  try {
+    const { userId } = res.locals;
+    const userData = (
+      await connection.query(
+        `SELECT "usersUrls"."userId", users.name, "usersUrls"."visitCount", urls.id AS "urlId", urls.url, urls.shorturl AS "shortUrl"
+  FROM "usersUrls"  
+  JOIN users ON "usersUrls"."userId" = users.id 
+  JOIN urls ON "usersUrls"."urlId" = urls.id
+  WHERE "usersUrls"."userId" = $1;`,
+        [userId]
+      )
+    ).rows;
+    let visitCount = 0;
+    userData.forEach((e) => (visitCount += e.visitCount));
+    const object = {
+      id: userData[0].userId,
+      name: userData[0].name,
+      visitCount: visitCount,
+      shortenedUrls: userData.map((value) => {
+        return {
+          id: value.urlId,
+          shortUrl: value.shortUrl,
+          url: value.url,
+          visitCount: value.visitCount,
+        };
+      }),
+    };
+
+    return res.send(object).status(200);
+  } catch (error) {
+    console.log(error);
+    return res.sendStatus(500);
+  }
+};
+
+export { signupPost, signinPost, getUserData };

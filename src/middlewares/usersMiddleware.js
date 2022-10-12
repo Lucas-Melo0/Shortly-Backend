@@ -35,4 +35,20 @@ const signinValidation = async (req, res, next) => {
   next();
 };
 
-export { signupValidation, signinValidation };
+const userValidation = async (req, res, next) => {
+  const { authorization } = req.headers;
+  const user = (
+    await connection.query("SELECT * FROM sessions WHERE token = $1", [
+      authorization,
+    ])
+  ).rows;
+
+  if (user.length === 0) return res.sendStatus(404);
+
+  const isValidToken = user.find((value) => value.token === authorization);
+  if (!authorization || !isValidToken) return res.sendStatus(401);
+  res.locals.userId = user[0].userId;
+  next();
+};
+
+export { signupValidation, signinValidation, userValidation };
