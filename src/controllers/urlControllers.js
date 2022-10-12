@@ -64,4 +64,21 @@ const urlRedirect = async (req, res) => {
     return res.sendStatus(500);
   }
 };
-export { urlShortener, listUrl, urlRedirect };
+
+const urlDeletion = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const referenceDeletion = await connection.query(
+      `DELETE FROM "usersUrls" WHERE "urlId" = $1;`,
+      [id]
+    );
+    const deletion = await connection.query("DELETE FROM urls WHERE id = $1;", [
+      id,
+    ]);
+    return res.sendStatus(204);
+  } catch (error) {
+    console.log(error);
+    return res.sendStatus(500);
+  }
+};
+export { urlShortener, listUrl, urlRedirect, urlDeletion };

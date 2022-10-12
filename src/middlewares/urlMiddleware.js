@@ -32,4 +32,36 @@ const shortUrlValidation = async (req, res, next) => {
   next();
 };
 
-export { urlValidation, shortUrlValidation };
+const deletionValidation = async (req, res, next) => {
+  try {
+    const { id: urlId } = req.params;
+    const { authorization } = req.headers;
+    const user = (
+      await connection.query("SELECT * FROM sessions WHERE token = $1", [
+        authorization,
+      ])
+    ).rows;
+    const isValidToken = user.find((value) => value.token === authorization);
+    const userId = user[0]?.userId;
+
+    const url = (
+      await connection.query('SELECT * FROM "usersUrls" WHERE "urlId" = $1', [
+        urlId,
+      ])
+    ).rows;
+
+    const isUrlFromUser = url.find((value) => value.userId === userId);
+
+    if (url.length === 0) return res.sendStatus(404);
+
+    if (!authorization || !isValidToken || !isUrlFromUser) {
+      return res.sendStatus(401);
+    }
+  } catch (error) {
+    console.log(error);
+    return res.sendStatus(500);
+  }
+  next();
+};
+
+export { urlValidation, shortUrlValidation, deletionValidation };
