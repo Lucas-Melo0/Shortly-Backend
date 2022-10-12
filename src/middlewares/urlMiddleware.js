@@ -14,8 +14,22 @@ const urlValidation = async (req, res, next) => {
 
   const { error } = urlValidator(req.body);
   if (error) return res.send(error.message).status(422);
-
+  res.locals.userId = user[0].userId;
   next();
 };
 
-export { urlValidation };
+const shortUrlValidation = async (req, res, next) => {
+  const { shortUrl } = req.params;
+  const storedUrl = (
+    await connection.query("SELECT * FROM urls WHERE shorturl = $1;", [
+      shortUrl,
+    ])
+  ).rows;
+  const isShortened = storedUrl.find((value) => value.shorturl === shortUrl);
+  if (!isShortened) return res.sendStatus(404);
+
+  res.locals.storedUrl = storedUrl;
+  next();
+};
+
+export { urlValidation, shortUrlValidation };
