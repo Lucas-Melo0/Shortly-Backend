@@ -1,9 +1,13 @@
 import express from "express";
 import usersRouter from "./routes/usersRoutes.js";
 import urlsRouter from "./routes/urlRoutes.js";
+import dotenv from "dotenv";
+dotenv.config();
 const server = express();
 server.use(express.json());
 server.use(usersRouter);
 server.use(urlsRouter);
 
-server.listen(4000, () => console.log("listen on 4000"));
+server.listen(process.env.PORT, () =>
+  console.log(`listen on ${process.env.PORT}`)
+);
