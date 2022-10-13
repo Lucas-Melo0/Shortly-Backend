@@ -67,4 +67,22 @@ const getUserData = async (req, res) => {
   }
 };
 
-export { signupPost, signinPost, getUserData };
+const listRanking = async (req, res) => {
+  try {
+    const rankingStandings = (
+      await connection.query(`SELECT "userId" AS id, users.name, COUNT("urlId") AS "linksCount",SUM("visitCount") AS "visitCount"
+    FROM "usersUrls"
+    JOIN "users" ON "userId" = users.id
+    GROUP BY "userId", users.name
+    ORDER BY "visitCount" DESC
+    LIMIT 10;`)
+    ).rows;
+
+    return res.send(rankingStandings).status(200);
+  } catch (error) {
+    console.log(error);
+    return res.sendStatus(500);
+  }
+};
+
+export { signupPost, signinPost, getUserData, listRanking };
