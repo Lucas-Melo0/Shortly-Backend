@@ -26,12 +26,12 @@ const getData = (userId) => {
 };
 
 const rankingData = () => {
-  return connection.query(`SELECT "userId" AS id, users.name, COUNT("urlId") AS "linksCount",SUM("visitCount") AS "visitCount"
-    FROM "usersUrls"
-    JOIN "users" ON "userId" = users.id
-    GROUP BY "userId", users.name
-    ORDER BY "visitCount" DESC
-    LIMIT 10;`);
+  return connection.query(`SELECT users.id AS id, users.name, COUNT("urlId") AS "linksCount", COALESCE(SUM("visitCount"),0) AS "visitCount"
+  FROM "usersUrls"
+  RIGHT JOIN "users" ON "userId" = users.id
+  GROUP BY users.id, users.name
+  ORDER BY "visitCount" DESC
+  LIMIT 10;`);
 };
 
 export { userSignup, userSignin, getData, rankingData };
