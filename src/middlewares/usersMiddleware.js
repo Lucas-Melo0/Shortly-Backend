@@ -4,7 +4,7 @@ import { signinValidator, signupValidator } from "../validations.js";
 
 const signupValidation = async (req, res, next) => {
   const { error } = signupValidator(req.body);
-  if (error) return res.send(error.message).status(422);
+  if (error) return res.status(422).send(error.message);
 
   const { email, name } = req.body;
   const users = (
@@ -20,7 +20,7 @@ const signupValidation = async (req, res, next) => {
 
 const signinValidation = async (req, res, next) => {
   const { error } = signinValidator(req.body);
-  if (error) return res.send(error.message).status(422);
+  if (error) return res.status(422).send(error.message);
 
   const { email, password } = req.body;
   const user = (
