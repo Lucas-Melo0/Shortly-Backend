@@ -37,16 +37,15 @@ const signinValidation = async (req, res, next) => {
 
 const userValidation = async (req, res, next) => {
   const { authorization } = req.headers;
+  const token = authorization?.replace("Bearer ", "");
   const user = (
-    await connection.query("SELECT * FROM sessions WHERE token = $1", [
-      authorization,
-    ])
+    await connection.query("SELECT * FROM sessions WHERE token = $1", [token])
   ).rows;
 
   if (user.length === 0) return res.sendStatus(404);
 
-  const isValidToken = user.find((value) => value.token === authorization);
-  if (!authorization || !isValidToken) return res.sendStatus(401);
+  const isValidToken = user.find((value) => value.token === token);
+  if (!token || !isValidToken) return res.sendStatus(401);
   res.locals.userId = user[0].userId;
   next();
 };

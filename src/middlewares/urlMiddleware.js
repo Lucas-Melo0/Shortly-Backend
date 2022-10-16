@@ -3,14 +3,14 @@ import { urlValidator } from "../validations.js";
 
 const urlValidation = async (req, res, next) => {
   const { authorization } = req.headers;
+  const token = authorization?.replace("Bearer ", "");
   const user = (
-    await connection.query("SELECT * FROM sessions WHERE token = $1", [
-      authorization,
-    ])
+    await connection.query("SELECT * FROM sessions WHERE token = $1", [token])
   ).rows;
 
-  const isValidToken = user.find((value) => value.token === authorization);
-  if (!authorization || !isValidToken) return res.sendStatus(401);
+  const isValidToken = user.find((value) => value.token === token);
+  console.log(isValidToken, authorization);
+  if (!token || !isValidToken) return res.sendStatus(401);
 
   const { error } = urlValidator(req.body);
   if (error) return res.send(error.message).status(422);
@@ -36,12 +36,11 @@ const deletionValidation = async (req, res, next) => {
   try {
     const { id: urlId } = req.params;
     const { authorization } = req.headers;
+    const token = authorization?.replace("Bearer ", "");
     const user = (
-      await connection.query("SELECT * FROM sessions WHERE token = $1", [
-        authorization,
-      ])
+      await connection.query("SELECT * FROM sessions WHERE token = $1", [token])
     ).rows;
-    const isValidToken = user.find((value) => value.token === authorization);
+    const isValidToken = user.find((value) => value.token === token);
     const userId = user[0]?.userId;
 
     const url = (
