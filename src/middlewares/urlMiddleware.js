@@ -9,7 +9,6 @@ const urlValidation = async (req, res, next) => {
   ).rows;
 
   const isValidToken = user.find((value) => value.token === token);
-  console.log(isValidToken, authorization);
   if (!token || !isValidToken) return res.sendStatus(401);
 
   const { error } = urlValidator(req.body);

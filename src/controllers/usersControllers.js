@@ -34,9 +34,7 @@ const signinPost = async (req, res) => {
 const getUserData = async (req, res) => {
   try {
     const { userId } = res.locals;
-    console.log(userId);
     const userData = (await getData(userId)).rows;
-    console.log(userData);
     let visitCount = 0;
     userData.forEach((e) => (visitCount += e.visitCount));
     const object = {
